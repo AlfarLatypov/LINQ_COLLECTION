@@ -4,9 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
-
-
-
+using System.Collections;
 
 namespace Linq_to_Collection
 {
@@ -22,7 +20,10 @@ namespace Linq_to_Collection
             // Exmpl02();
             //Exmpl03();
            // Exmpl04();
-            Exmpl05();
+           // Exmpl05();
+           // Exmpl06();
+           // Exmpl07();
+            Exmpl08();
 
 
         }
@@ -284,8 +285,91 @@ namespace Linq_to_Collection
         }
 
 
+        //Методы преобразования
+        //ofType
+        //Cast
+        //ToArray и тд
 
-            static void PrintInfo(List<Area> areas)
+        public static void Exmpl06()
+        {
+            ArrayList classList = new ArrayList();
+            classList.AddRange(new int[] { 3, 4, 5 });
+            classList.AddRange(new string[] { "тест", "2" });
+
+            //возбуждает ошибку
+            IEnumerable<int> seq = classList.Cast<int>();
+            //не возбуждает ошибку
+            IEnumerable<int> seq2 = classList.OfType<int>();
+
+
+            //-----------------------------------------------------------------------------------
+            Dictionary<string,string> q2 = db.Area.ToDictionary(a => a.IP, a => a.Name);
+            //----------------------------
+            Dictionary<string, string> q3 = new Dictionary<string, string>();
+            foreach (Area item in db.Area)
+            {
+                q3.Add(item.IP, item.Name);
+            }
+
+            //-----------------------------------------------------------------------------------
+
+        }
+
+
+        //Поэлементные операции
+        //First
+        //FirstOrDefault
+        //Last
+        //LastOrDefault
+        //Single // проверяет на уникальность
+        //SingleOrDefault 
+        //ElementAt  //обращается к конкретному элементу
+        //ElementAtOrDefault
+        //DefaultIfEmpty //вернет либо пустую
+
+        public static void Exmpl07()
+        {
+            var q1 = db.Area.First(f=>!string.IsNullOrEmpty(f.IP));
+           // var q2 = db.Area.First(f => f.IP == "000"); // будет ошибка т.к. тут нет такого айпи
+            var q3 = db.Area.FirstOrDefault(f => f.IP == "000"); // вернет NULL если не найдет
+
+            var q4 = db.Area.ElementAt(3);
+
+            //  Console.WriteLine(q1);
+
+        }
+
+        // Квантификаторы
+        //Contains //try or false
+        //Any
+        //Exist
+        //All
+        //Equal
+        //Sequence
+
+        public static void Exmpl08()
+        {
+            int[] zone = new[] { 2, 4, 5, 6, 8, 9 };
+            List<Area> q1 = db.Area
+                .Where(w => zone.Contains(w.AreaId))
+                .ToList(); //вытащит все зоны с айдишками { 2, 4, 5, 6, 8, 9 };
+
+            bool q2 = db.Area
+                .Select(s => s.AreaId).Contains(3); //Содержится ли зона с айди 3 в этом селекте
+
+
+
+
+            bool q3 = db.Document.Any(d => d.CreatedBy == "Gertsen"); //есть ли хоть один документ созданный Герценом
+
+            bool q4 = db.Timer.All(a => a.DateFinish != null); //все ли имеют дату завершения
+
+
+            List<int> i = Enumerable.Range(1, 12).ToList();
+        }
+
+
+        static void PrintInfo(List<Area> areas)
         {
             foreach (Area area in areas)
             {
